@@ -9,6 +9,10 @@ class webpAnimation : public QWidget
 
 public:
     webpAnimation(QWidget *parent = Q_NULLPTR);
+	~webpAnimation();
+
+protected:
+	virtual void closeEvent(QCloseEvent *event);
 
 private:
     Ui::webpAnimationClass ui;

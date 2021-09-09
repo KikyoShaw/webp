@@ -1,25 +1,53 @@
-<UI version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>webpAnimationClass</class>
- <widget class="QWidget" name="webpAnimationClass" >
-  <property name="objectName" >
-   <string notr="true">webpAnimationClass</string>
-  </property>
-  <property name="geometry" >
+ <widget class="QWidget" name="webpAnimationClass">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>693</width>
+    <height>458</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>webpAnimation</string>
-  </property>$centralwidget$
+  </property>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>410</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>测试</string>
+   </property>
+  </widget>
+  <widget class="MP4View" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>30</y>
+     <width>591</width>
+     <height>291</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MP4View</class>
+   <extends>QWidget</extends>
+   <header location="global">MP4View.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
-   <include location="webpAnimation.qrc"/>
+  <include location="webpAnimation.qrc"/>
  </resources>
  <connections/>
-</UI>
+</ui>
