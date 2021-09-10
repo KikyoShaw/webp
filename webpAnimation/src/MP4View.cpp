@@ -29,9 +29,10 @@ void MP4View::stopPlay()
 	m_inverval = 50;
 	m_currIndex = 0;
 	m_stopIndex = -1;
+	m_isAutoScale = false;
 }
 
-void MP4View::startPlay(const QString & url, QString path, float scale, int loop)
+void MP4View::startPlay(const QString & url, QString path, float scale, int loop, bool isAutoScale)
 {
 	if (url.isEmpty()) {
 		MP4_LOG << "url is empty";
@@ -61,6 +62,7 @@ void MP4View::startPlay(const QString & url, QString path, float scale, int loop
 	m_url = url;
 	m_scale = scale;
 	m_loop = loop;
+	m_isAutoScale = isAutoScale;
 	//下载播放动画
 	QPointer<QObject> obj(this);
 	webpMgr.loadAlphaMp4(url, path, true, [=](MP4Data* list) {
@@ -192,6 +194,34 @@ void MP4View::paintEvent(QPaintEvent *event)
 	auto point = viewRect.topLeft() + framePoint;
 	//每帧范围
 	QSize frameSize = QSize(frame->width, frame->height) * m_scale;
+	// 自动缩放，“按照界面宽度缩放，然后从上到下，下面会被切掉”或者“按照界面高度缩放，然后左右两边平均切掉”
+	if (m_isAutoScale)
+	{
+		float dblScale = 0.0; // 缩放比例
+		bool bHoriAlign = false; // 是否水平对齐调整——水平方向左右平均切掉
+		if (((float)painterRect.width() * viewRect.height() / viewRect.width()) >= painterRect.height())
+		{
+			// 按照界面宽度缩放
+			dblScale = (float)painterRect.width() / viewRect.width();
+		}
+		else
+		{
+			bHoriAlign = true;
+			// 按照界面高度缩放
+			dblScale = (float)painterRect.height() / viewRect.height();
+		}
+		// 帧画面，画布原点就在窗口原点
+		framePoint = framePoint * dblScale;
+		point = QPoint(0, 0) + framePoint;
+		//每帧范围
+		frameSize = frameSize * dblScale;
+		// 水平对齐调整——水平方向左右平均切掉
+		if (bHoriAlign)
+		{
+			QSize newViewSize = viewSize * dblScale;
+			point.setX(point.x() - ((newViewSize.width() - painterRect.width()) / 2));
+		}
+	}
 	//渲染
 	painter.setRenderHint(QPainter::SmoothPixmapTransform);
 	painter.drawPixmap(point, QPixmap::fromImage(temp).scaled(frameSize));

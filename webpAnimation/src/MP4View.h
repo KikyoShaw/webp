@@ -46,7 +46,7 @@ public:
 
 	void stopPlay();
 
-	void startPlay(const QString & url, QString path, float scale = 1.0f, int loop = 0);
+	void startPlay(const QString & url, QString path, float scale = 1.0f, int loop = 0, bool isAutoScale = false);
 
 	void stopWithIndex(int index);
 //	void setScale(float x, float y);
@@ -96,6 +96,7 @@ private:
 	//MP4数据
 	QSharedPointer<const MP4Data> m_data;
 	QMutex m_mutex;
+	bool m_isAutoScale = false; // 是否自动缩放，按照宽度缩放，然后从上到下，下面会被切掉
 };
 
 
