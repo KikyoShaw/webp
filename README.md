@@ -2,6 +2,10 @@
 
 解析webp文件播放动画
 
+1.支持本地webp播放
+
+2.支持网络webp链接播放
+
 官方网站
 https://developers.google.com/speed/webp
 
