@@ -1,3 +1,9 @@
-/webpAnimation/Debug
-/webpAnimation/Release/qmake
-/.vs/webpAnimation/v15
+webpAnimation/Debug
+
+webpAnimation/Release
+
+Debug
+
+Release
+
+.vs
