@@ -1,6 +1,7 @@
 #include "vwebpmgr.h"
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkConfiguration>
 #include "vwebp.h"
 
 WebpMgr & WebpMgr::getInstance()
@@ -99,6 +100,7 @@ void WebpMgr::loadAlphaWebp(const QString & url, const QString & saveFolder, boo
 	QNetworkRequest request;
 	request.setUrl(QUrl(url));
 	request.setHeader(QNetworkRequest::UserAgentHeader, "RT-Thread ART");
+	m_networkManager.activeConfiguration();
 	auto reply = m_networkManager.get(request);
 	//保存图片到本地
 	connect(reply, &QNetworkReply::finished, this, [=] {
