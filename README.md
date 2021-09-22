@@ -1,6 +1,6 @@
 # webp
 
-解析webp文件播放动画
+基于Google libwebp解析webp文件播放动画
 
 1.支持本地webp播放
 
