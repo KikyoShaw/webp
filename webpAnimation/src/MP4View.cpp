@@ -6,7 +6,6 @@
 
 #define MP4_LOG (qInfo().noquote() << QStringLiteral("[MP4]"))
 
-constexpr char* MP4_Path = "res/mp4/";
 constexpr char* WEBP_Path = "res/webp/";
 
 MP4View::MP4View(QWidget * parent) : QWidget(parent)
@@ -54,8 +53,6 @@ void MP4View::startPlay(const QString & url, QString path, float scale, int loop
 		// webp格式保存位置
 		if (url.contains(".webp", Qt::CaseInsensitive))
 			path = WEBP_Path;
-		else
-			path = MP4_Path;
 	}
 	//先停止当前正在播的
 	stopPlay();
@@ -66,7 +63,7 @@ void MP4View::startPlay(const QString & url, QString path, float scale, int loop
 	m_isAutoScale = isAutoScale;
 	//下载播放动画
 	QPointer<QObject> obj(this);
-	webpMgr.loadAlphaMp4(url, path, true, [=](MP4Data* list) {
+	webpMgr.loadAlphaWebp(url, path, true, [=](MP4Data* list) {
 		if (obj.isNull()) {
 			return;
 		}

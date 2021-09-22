@@ -11,8 +11,7 @@ WebpMgr & WebpMgr::getInstance()
 
 WebpMgr::WebpMgr(QObject *parent)
 	: QObject(parent)
-{
-	
+{	
 }
 
 WebpMgr::~WebpMgr()
@@ -20,9 +19,9 @@ WebpMgr::~WebpMgr()
 }
 
 static std::map<QString, std::vector<VideoMovieUtils::FnCallback>* > s_mp4_map;
-static QMutex s_mp4_mutex;
-static void doMp4CallbackQueue(const QString strFilePath, VideoMovieUtils::SpriteSheetVo* pvo) {
-	QMutexLocker locker(&s_mp4_mutex);
+static QMutex s_webp_mutex;
+static void doWebpCallbackQueue(const QString strFilePath, VideoMovieUtils::SpriteSheetVo* pvo) {
+	QMutexLocker locker(&s_webp_mutex);
 	auto* list = s_mp4_map[strFilePath];
 	s_mp4_map.erase(strFilePath);
 	if (list == Q_NULLPTR) {
@@ -44,23 +43,17 @@ static void doMp4CallbackQueue(const QString strFilePath, VideoMovieUtils::Sprit
 	delete list;
 }
 
-void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool bDecode, const VideoMovieUtils::FnCallback callBack)
+void WebpMgr::loadAlphaWebp(const QString & url, const QString & saveFolder, bool bDecode, const VideoMovieUtils::FnCallback callBack)
 {
-	const QDir mp4Dir(saveFolder);
-	if (!mp4Dir.exists()) {
-		mp4Dir.mkpath("");
+	const QDir webpDir(saveFolder);
+	if (!webpDir.exists()) {
+		webpDir.mkpath("");
 	}
-
+	//获取链接哈希值
 	const QString hashId = QCryptographicHash::hash(url.toStdString().c_str(), QCryptographicHash::Md5).toHex().toUpper();
-
 	// webp格式的后缀名
-	QString strSuffix;
-	if (url.contains(".webp", Qt::CaseInsensitive))
-		strSuffix = ".webp";
-
-	const QString strFilePath = mp4Dir.absoluteFilePath(hashId) + strSuffix;
+	const QString strFilePath = webpDir.absoluteFilePath(hashId) + ".webp";
 	const QString strSaveFolder = VideoMovieUtils::getSaveFolderFromFilePath(strFilePath);
-
 	{
 		VideoMovieUtils::SpriteSheetVo* ret = nullptr;
 		if (VideoMovieUtils::getSpriteSheet(strSaveFolder, ret, bDecode)) {
@@ -68,7 +61,6 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 			return;
 		}
 	}
-
 	{
 		QMutexLocker lock(&m_mutexMapWebp);
 
@@ -84,7 +76,7 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 
 	//等待队列
 	{
-		QMutexLocker locker(&s_mp4_mutex);
+		QMutexLocker locker(&s_webp_mutex);
 		auto* list = s_mp4_map[strFilePath];
 		if (nullptr == list) {
 			list = new std::vector<VideoMovieUtils::FnCallback>();
@@ -94,16 +86,26 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 		list->push_back(callBack);
 	}
 
-	//开始执行下载流程
-	QNetworkRequest request(url);
-	auto reply = m_networkManager.get(request);
+	//如果文件存在直接播放
+	if (QFile::exists(strFilePath)) {
+		qInfo() << "end download webp" << url << strFilePath;
+		VWebp::convertAlphaWebpToPngs(this, strFilePath, strSaveFolder, bDecode, [=](VideoMovieUtils::SpriteSheetVo* pvo) {
+			doWebpCallbackQueue(strFilePath, pvo);
+		});
+		return;
+	}
 
+	//开始执行下载流程
+	QNetworkRequest request;
+	request.setUrl(QUrl(url));
+	request.setHeader(QNetworkRequest::UserAgentHeader, "RT-Thread ART");
+	auto reply = m_networkManager.get(request);
 	//保存图片到本地
 	connect(reply, &QNetworkReply::finished, this, [=] {
 		auto data = reply->readAll();
 		reply->deleteLater();
 		if (data.isEmpty()) {
-			doMp4CallbackQueue(strFilePath, nullptr);
+			doWebpCallbackQueue(strFilePath, nullptr);
 			return;
 		}
 		//auto fileName = QString("%1%2%3").arg(path).arg(QDir::separator()).arg(name);
@@ -112,12 +114,9 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 		file.write(data);
 		file.close();
 
-		if (url.contains(".webp", Qt::CaseInsensitive))
-		{
-			qInfo() << "end download webp" << url << strFilePath;
-			VWebp::convertAlphaWebpToPngs(this, strFilePath, strSaveFolder, bDecode, [=](VideoMovieUtils::SpriteSheetVo* pvo) {
-				doMp4CallbackQueue(strFilePath, pvo);
-			});
-		}
+		qInfo() << "end download webp" << url << strFilePath;
+		VWebp::convertAlphaWebpToPngs(this, strFilePath, strSaveFolder, bDecode, [=](VideoMovieUtils::SpriteSheetVo* pvo) {
+			doWebpCallbackQueue(strFilePath, pvo);
+		});
 	});
 }

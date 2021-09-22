@@ -19,6 +19,8 @@ VWebp::VWebp(QObject* parent/* = Q_NULLPTR*/)
 
 VWebp::~VWebp()
 {
+	quit();
+	wait();
 }
 
 // 初始设置webp文件路径
