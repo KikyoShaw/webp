@@ -160,6 +160,9 @@ void VWebp::convertAlphaWebpToPngs(QObject* context, const QString& strFilePath,
 	}
 
 	VWebp* pWebp = new VWebp();
+	if (nullptr == pWebp)
+		return;
+
 	pWebp->initWebpParse(strFilePath);
 
 	connect(pWebp, &QThread::finished, pWebp, &QObject::deleteLater);
@@ -187,7 +190,7 @@ void VWebp::convertAlphaWebpToPngs(QObject* context, const QString& strFilePath,
 	if (!bStart)
 	{
 		delete pWebp;
-		pWebp = NULL;
+		pWebp = nullptr;
 	}
 }
 

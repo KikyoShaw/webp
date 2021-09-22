@@ -16,6 +16,7 @@ MP4View::MP4View(QWidget * parent) : QWidget(parent)
 
 MP4View::~MP4View()
 {
+	stopPlay();
 }
 
 void MP4View::stopPlay()

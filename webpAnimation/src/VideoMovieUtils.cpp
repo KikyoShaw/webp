@@ -305,35 +305,6 @@ bool getSpriteSheet(const QString& strSaveFolder, SpriteSheetVo*& ret, bool bDec
 	}
 }
 
-void convertAlphaMp4ToPngs(QObject* context, const QString& strFilePath, const QString& strSaveFolder, bool bDecode, const FnCallback callBack)
-{
-	{
-		SpriteSheetVo* ret = nullptr;
-		if (getSpriteSheet(strSaveFolder, ret, bDecode)) {
-			callBack(ret);
-			return;
-		}
-	}
-
-	QString strCmd = QString("FFMPEGExtend.exe mp42png \"%1\" \"%2\"").arg(strFilePath).arg(strSaveFolder);
-	qInfo().noquote() << "start mp4 parse" << strCmd;
-	QProcess* process = new QProcess(context);
-	QObject::connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), context, [=](int exitCode, QProcess::ExitStatus exitStatus) {
-
-		process->close();
-		process->deleteLater();
-
-		if (bDecode) {
-			callBack(getSpriteSheet(strSaveFolder));
-		}
-		else {
-			callBack(nullptr);
-		}
-	});
-
-	process->start(strCmd);
-}
-
 QString getSaveFolderFromFilePath(const QString& strFilePath) {
 	QFileInfo fileInfo(strFilePath);
 	QDir dir(fileInfo.path());
@@ -343,12 +314,6 @@ QString getSaveFolderFromFilePath(const QString& strFilePath) {
 	QString strSaveFolder = dir.absoluteFilePath(fileInfo.baseName());
 
 	return strSaveFolder;
-}
-
-void convertAlphaMp4ToPngs(QObject* context, const QString& strFilePath, bool bDecode, const FnCallback callBack) {
-	QString strSaveFolder = getSaveFolderFromFilePath(strFilePath);
-
-	convertAlphaMp4ToPngs(context, strFilePath, strSaveFolder, bDecode, callBack);
 }
 
 }

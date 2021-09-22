@@ -24,6 +24,5 @@ webpAnimation::~webpAnimation()
 
 void webpAnimation::closeEvent(QCloseEvent * event)
 {
-	ui.widget->stopPlay();
 	QWidget::closeEvent(event);
 }

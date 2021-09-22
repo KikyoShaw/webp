@@ -1,7 +1,7 @@
 #pragma once
 
-#include "vutility.h"
 #include <QImage>
+#include <QtCore>
 
 namespace VideoMovieUtils
 {
@@ -35,15 +35,11 @@ namespace VideoMovieUtils
 		SpriteSheetVo* clone();
 	};
 
-	typedef std::function<void(SpriteSheetVo*)> VUTILITY_LIBRARY_EXPORT FnCallback;
+	typedef std::function<void(SpriteSheetVo*)> FnCallback;
 	//typedef void(*FnCallback)(SpriteSheetVo* vo);
 
-	QString VUTILITY_LIBRARY_EXPORT getSaveFolderFromFilePath(const QString& strFilePath);
+	QString getSaveFolderFromFilePath(const QString& strFilePath);
 
-	//SpriteSheetVo* VUTILITY_LIBRARY_EXPORT getSpriteSheet(const QString& strSaveFolder);
-	bool VUTILITY_LIBRARY_EXPORT getSpriteSheet(const QString& strSaveFolder, SpriteSheetVo*& ret, bool bDecode);
-
-	//void VUTILITY_LIBRARY_EXPORT convertAlphaMp4ToPngs(QObject* context, const QString& strFilePath, bool bDecode, const FnCallback callBack);
-	void VUTILITY_LIBRARY_EXPORT convertAlphaMp4ToPngs(QObject* context, const QString& strFilePath, const QString& strSaveFolder, bool bDecode, const FnCallback callBack);
-
+	//SpriteSheetVo* getSpriteSheet(const QString& strSaveFolder);
+	bool getSpriteSheet(const QString& strSaveFolder, SpriteSheetVo*& ret, bool bDecode);
 };

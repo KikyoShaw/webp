@@ -57,8 +57,6 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 	QString strSuffix;
 	if (url.contains(".webp", Qt::CaseInsensitive))
 		strSuffix = ".webp";
-	else
-		strSuffix = ".mp4";
 
 	const QString strFilePath = mp4Dir.absoluteFilePath(hashId) + strSuffix;
 	const QString strSaveFolder = VideoMovieUtils::getSaveFolderFromFilePath(strFilePath);
@@ -96,12 +94,10 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 		list->push_back(callBack);
 	}
 
-
 	//开始执行下载流程
 	QNetworkRequest request(url);
 	auto reply = m_networkManager.get(request);
 
-	qInfo() << "start download mp4" << url << strFilePath;
 	//保存图片到本地
 	connect(reply, &QNetworkReply::finished, this, [=] {
 		auto data = reply->readAll();
@@ -120,13 +116,6 @@ void WebpMgr::loadAlphaMp4(const QString & url, const QString & saveFolder, bool
 		{
 			qInfo() << "end download webp" << url << strFilePath;
 			VWebp::convertAlphaWebpToPngs(this, strFilePath, strSaveFolder, bDecode, [=](VideoMovieUtils::SpriteSheetVo* pvo) {
-				doMp4CallbackQueue(strFilePath, pvo);
-			});
-		}
-		else
-		{
-			qInfo() << "end download mp4" << url << strFilePath;
-			VideoMovieUtils::convertAlphaMp4ToPngs(this, strFilePath, strSaveFolder, bDecode, [=](VideoMovieUtils::SpriteSheetVo* pvo) {
 				doMp4CallbackQueue(strFilePath, pvo);
 			});
 		}

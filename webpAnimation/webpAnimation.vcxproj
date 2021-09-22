@@ -118,7 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\VideoMovieUtils.h" />
-    <ClInclude Include="src\vutility.h" />
     <QtMoc Include="src\vwebpmgr.h" />
     <QtMoc Include="src\vwebp.h" />
   </ItemGroup>
