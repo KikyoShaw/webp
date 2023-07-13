@@ -22,7 +22,7 @@ libwebp编译
 https://blog.csdn.net/qq_36651243/article/details/120186555
 
 
-## libwebp 解码过程更详细的解释：
+## libwebp 解码过程详细的解释：
 
 1.读取并解析文件头：
   
